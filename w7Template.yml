@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: VPC with public, private subnets and VPC endpoints for DynamoDB & CloudWatch Logs
 
 Resources:
+
+################################################## VPC Resources ##################################################
+
   VPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -115,6 +118,8 @@ Resources:
       SecurityGroupIds: [] # Can define log SG if needed
 
 
+################################################### ECR Resources ##################################################
+
   ECRRepository:
     Type: AWS::ECR::Repository
     Properties:
@@ -155,6 +160,101 @@ Resources:
       Tags:
         - Key: Name
           Value: todo-repo
+
+
+################################################### Security Groups and Load Balancers ##################################################
+
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP traffic from internet
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  ECSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow traffic from ALB only
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2020
+          ToPort: 2020
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: todo-alb
+      Subnets: [!Ref PublicSubnet1, !Ref PublicSubnet2]
+      SecurityGroups: [!Ref ALBSecurityGroup]
+      Scheme: internet-facing
+      Type: application
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: "60"
+
+  BlueTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: todo-blue-tg
+      Port: 2020
+      Protocol: HTTP
+      VpcId: !Ref VpcId
+      TargetType: ip
+      HealthCheckPath: /actuator/health
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: 2020
+      HealthCheckIntervalSeconds: 30
+      Matcher:
+        HttpCode: 200
+
+  GreenTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: todo-green-tg
+      Port: 2020
+      Protocol: HTTP
+      VpcId: !Ref VpcId
+      TargetType: ip
+      HealthCheckPath: /actuator/health
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: 2020
+      HealthCheckIntervalSeconds: 30
+      Matcher:
+        HttpCode: 200
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref BlueTargetGroup
+
+
+  ALBTestListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 1111
+      Protocol: HTTP
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            StatusCode: 404
+            ContentType: text/plain
+            MessageBody: "No default test target group. CodeDeploy owns this listener."
+  
+
+
+
 
 Outputs:
   VPCId:

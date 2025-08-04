@@ -168,7 +168,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow HTTP traffic from internet
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -179,7 +179,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow traffic from ALB only
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 2020
@@ -204,7 +204,7 @@ Resources:
       Name: todo-blue-tg
       Port: 2020
       Protocol: HTTP
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
       TargetType: ip
       HealthCheckPath: /actuator/health
       HealthCheckProtocol: HTTP
@@ -219,7 +219,7 @@ Resources:
       Name: todo-green-tg
       Port: 2020
       Protocol: HTTP
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
       TargetType: ip
       HealthCheckPath: /actuator/health
       HealthCheckProtocol: HTTP

@@ -118,6 +118,7 @@ Resources:
   ECRRepository:
     Type: AWS::ECR::Repository
     Properties:
+      RepositoryName: todo-repo
       ImageTagMutability: MUTABLE
       ImageScanningConfiguration:
         ScanOnPush: true

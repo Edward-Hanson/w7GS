@@ -92,7 +92,6 @@ Resources:
         - Key: Name
           Value: PrivateRouteTable
 
-
   # Associate private subnets
   PrivateSubnet1RouteTableAssoc:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -339,20 +338,7 @@ Resources:
             Principal:
               Service: ecs-tasks.amazonaws.com
             Action: sts:AssumeRole
-      Policies:
-        - PolicyName: S3Access
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
-                  - s3:DeleteObject
-                  - s3:ListBucket
-                Resource:
-                  - arn:aws:s3:::cloudbasedproject-bucket-1
-                  - arn:aws:s3:::cloudbasedproject-bucket-1/*
+   
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -395,7 +381,7 @@ Resources:
       - ALBListener
       - ALBTestListener
     Properties:
-      ServiceName: !Sub '${ProjectName}-service'
+      ServiceName: todo-service
       LaunchType: FARGATE
       Cluster: !Ref ECSCluster
       DesiredCount: 2

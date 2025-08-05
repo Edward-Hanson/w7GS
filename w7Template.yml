@@ -278,7 +278,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref ApplicationLoadBalancer
-      Port: 1111
+      Port: 8080
       Protocol: HTTP
       DefaultActions:
         - Type: fixed-response

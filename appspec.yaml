@@ -1,0 +1,18 @@
+version: 0.0
+Resources:
+- TargetService:
+    Type: AWS::ECS::Service
+    Properties:
+      TaskDefinition: <TASK_DEFINITION>
+      LoadBalancerInfo:
+        ContainerName: "todo-container"
+        ContainerPort: 2020
+      PlatformVersion: "1.4.0"
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+          - "subnet-0253651e11ccc192c"
+          - "subnet-08089b2419c3a5984"
+          SecurityGroups:
+          - "sg-01e7433cf0dd14363"
+          AssignPublicIp: "DISABLED"

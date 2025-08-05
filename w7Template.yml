@@ -358,7 +358,7 @@ Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: todo-task
+      Family: todo-taskdefinition
       NetworkMode: awsvpc
       RequiresCompatibilities: 
         - FARGATE
@@ -417,6 +417,71 @@ Resources:
           TargetGroupArn: !Ref BlueTargetGroup  
 
 
+########################################## Code Deploy #################################################
+
+  CodeDeployApplication:
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ApplicationName: todo-app
+      ComputePlatform: ECS
+
+
+  CodeDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: todo-codedeploy-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codedeploy.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeDeployECSInlinePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:*
+                  - elasticloadbalancing:*
+                  - codedeploy:*
+                  - iam:PassRole
+                  - cloudwatch:*
+                Resource: "*"
+
+  ECSBlueGreenDeployment:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    DependsOn: CodeDeployApplication
+    Properties:
+      ApplicationName: !Ref CodeDeployApplication
+      DeploymentGroupName: todo-deployment-group
+      ServiceRoleArn: !GetAtt CodeDeployRole.Arn
+      DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
+      DeploymentStyle:
+        DeploymentType: BLUE_GREEN
+        DeploymentOption: WITH_TRAFFIC_CONTROL
+      ECSServices:
+        - ClusterName: todo-cluster
+          ServiceName: todo-service
+      LoadBalancerInfo:
+        TargetGroupPairInfoList:
+          - TargetGroups:
+              - Name: todo-blue-tg
+              - Name: todo-green-tg
+            ProdTrafficRoute:
+              ListenerArns:
+                - !Ref ALBListener
+            TestTrafficRoute:
+              ListenerArns:
+                - !Ref ALBTestListener
+      BlueGreenDeploymentConfiguration:
+        TerminateBlueInstancesOnDeploymentSuccess:
+          Action: TERMINATE
+          TerminationWaitTimeInMinutes: 1
+        DeploymentReadyOption:
+          ActionOnTimeout: CONTINUE_DEPLOYMENT
 
 
 Outputs:

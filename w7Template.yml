@@ -353,7 +353,7 @@ Resources:
                 - dynamodb:Query
               Resource: arn:aws:dynamodb:*:*:table/TodoTable
 
-   
+
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -484,18 +484,143 @@ Resources:
           ActionOnTimeout: CONTINUE_DEPLOYMENT
 
 
-Outputs:
-  VPCId:
-    Value: !Ref VPC
-  PrivateSubnets:
-    Value: !Join [",", [!Ref PrivateSubnet1, !Ref PrivateSubnet2]]
-  PublicSubnets:
-    Value: !Join [",", [!Ref PublicSubnet1, !Ref PublicSubnet2]]
+############################################## Code Pipeline #################################################
+ 
 
-  ECRRepositoryURI:
-    Description: ECR Repository URI
-    Value: !GetAtt ECRRepository.RepositoryUri
+  CodePipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: week-seven-todo-artifact-bucket
+      VersioningConfiguration:
+        Status: Enabled
+
+
+#   CodePipelineRole:
+#     Type: AWS::IAM::Role
+#     Properties:
+#       RoleName: todo-codepipeline-role
+#       AssumeRolePolicyDocument:
+#         Version: '2012-10-17'
+#         Statement:
+#           - Effect: Allow
+#             Principal:
+#               Service: codepipeline.amazonaws.com
+#             Action: sts:AssumeRole
+#           - Effect: Allow
+#             Principal:
+#               Service: events.amazonaws.com
+#             Action: sts:AssumeRole
+#       Policies:
+#         - PolicyName: FullPipelineAccess
+#           PolicyDocument:
+#             Version: '2012-10-17'
+#             Statement:
+#               - Effect: Allow
+#                 Action:
+#                   - s3:*
+#                 Resource:
+#                   - arn:aws:s3:::week-seven-todo-artifact-bucket
+#                   - arn:aws:s3:::week-seven-todo-artifact-bucket/*
+
+#               - Effect: Allow
+#                 Action:
+#                   - ecs:RegisterTaskDefinition
+#                   - ecs:DescribeServices
+#                   - ecs:UpdateService
+#                 Resource: '*'
+
+#               - Effect: Allow
+#                 Action:
+#                   - codedeploy:*
+#                 Resource: '*'
+#               - Effect: Allow
+#                 Action:
+#                   - iam:PassRole
+#                 Resource: '*'
+
+#               - Effect: Allow
+#                 Action:
+#                   - logs:*
+#                   - cloudwatch:*
+#                 Resource: '*'
+
+#               - Effect: Allow
+#                 Action:
+#                   - ecr:GetAuthorizationToken
+#                   - ecr:BatchCheckLayerAvailability
+#                   - ecr:GetDownloadUrlForLayer
+#                   - ecr:BatchGetImage
+#                 Resource: '*'
+
+#               - Effect: Allow
+#                 Action:
+#                   - events:*
+#                 Resource: '*'
+
+#               - Effect: Allow
+#                 Action: 
+#                   - codepipeline:StartPipelineExecution
+#                 Resource: '*'
+
+
+#   CodePipeline:
+#     Type: AWS::CodePipeline::Pipeline
+#     Properties:
+#       Name: todo-pipeline
+#       RoleArn: !GetAtt CodePipelineRole.Arn
+#       ArtifactStore:
+#         Type: S3
+#         Location: !Ref CodePipelineArtifactBucket
+#       RestartExecutionOnUpdate: true
+#       Stages:
+#         - Name: Source
+#           Actions:
+#             - Name: SourceAction
+#               ActionTypeId:
+#                 Category: Source
+#                 Owner: AWS
+#                 Provider: S3
+#                 Version: 1
+#               OutputArtifacts:
+#                 - Name: SourceOutput
+#               Configuration:
+#                 S3Bucket: !Ref CodePipelineArtifactBucket
+#                 S3ObjectKey: source.zip
+#                 PollForSourceChanges: false
+#               RunOrder: 1
+
+#         - Name: Deploy
+#           Actions:
+#             - Name: DeployToECS
+#               ActionTypeId:
+#                 Category: Deploy
+#                 Owner: AWS
+#                 Provider: CodeDeployToECS
+#                 Version: 1
+#               InputArtifacts:
+#                 - Name: SourceOutput
+#               Configuration:
+#                 ApplicationName: todo-app
+#                 DeploymentGroupName: todo-deployment-group
+#                 TaskDefinitionTemplateArtifact: SourceOutput
+#                 AppSpecTemplateArtifact: SourceOutput
+#                 AppSpecTemplatePath: appspec.yaml
+#                 TaskDefinitionTemplatePath: taskdef.json
+#               RunOrder: 1
+
+
+# Outputs:
+#   VPCId:
+#     Value: !Ref VPC
+#   PrivateSubnets:
+#     Value: !Join [",", [!Ref PrivateSubnet1, !Ref PrivateSubnet2]]
+#   PublicSubnets:
+#     Value: !Join [",", [!Ref PublicSubnet1, !Ref PublicSubnet2]]
+
+#   ECRRepositoryURI:
+#     Description: ECR Repository URI
+#     Value: !GetAtt ECRRepository.RepositoryUri
   
-  ECRRepositoryArn:
-    Description: ECR Repository ARN
-    Value: !GetAtt ECRRepository.Arn
+#   ECRRepositoryArn:
+#     Description: ECR Repository ARN
+#     Value: !GetAtt ECRRepository.Arn

@@ -84,6 +84,14 @@ Resources:
       SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref PublicRouteTable
 
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable
+
 
   # Associate private subnets
   PrivateSubnet1RouteTableAssoc:

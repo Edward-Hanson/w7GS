@@ -1,0 +1,40 @@
+{
+  "family": "todo-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::343218213563:role/todo-ecs-execution-role",
+  "taskRoleArn": "arn:aws:iam::343218213563:role/todo-ecs-task-role",
+  "containerDefinitions": [
+    {
+      "name": "todo-container",
+      "image": "343218213563.dkr.ecr.eu-west-1.amazonaws.com/todo-repo:latest",
+      "portMappings": [
+        {
+          "containerPort": 2020,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/todo-log-group",
+          "awslogs-region": "eu-west-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:2020/actuator/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}

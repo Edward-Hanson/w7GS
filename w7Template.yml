@@ -607,6 +607,28 @@ Resources:
               RunOrder: 1
 
 
+############################################### Event Bridge Rule #################################################
+
+  ECRPushEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: todo-ecr-push-rule
+      Description: 'Trigger pipeline when new image is pushed to ECR'
+      EventPattern:
+        source: ["aws.ecr"]
+        detail-type: ["ECR Image Action"]
+        detail:
+          action-type: ["PUSH"]
+          repository-name:
+            - todo-repo
+          result: ["SUCCESS"]
+      State: ENABLED
+      Targets:
+        - Arn: arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:todo-pipeline
+          Id: "CodePipelineTarget"
+          RoleArn: !GetAtt CodePipelineRole.Arn
+
+
 Outputs:
   VPCId:
     Value: !Ref VPC

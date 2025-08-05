@@ -20,7 +20,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/todo-log-group",
+          "awslogs-group": "todo-log-group",
           "awslogs-region": "eu-west-1",
           "awslogs-stream-prefix": "ecs"
         }

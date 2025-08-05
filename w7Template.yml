@@ -294,7 +294,7 @@ Resources:
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /ecs/todo-log-group
+      LogGroupName: todo-log-group
       RetentionInDays: 14
 
   ECSCluster:

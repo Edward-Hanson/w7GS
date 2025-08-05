@@ -624,7 +624,7 @@ Resources:
           result: ["SUCCESS"]
       State: ENABLED
       Targets:
-        - Arn: arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:todo-pipeline
+        - Arn: arn:aws:codepipeline:eu-west-1:343218213563:todo-pipeline
           Id: "CodePipelineTarget"
           RoleArn: !GetAtt CodePipelineRole.Arn
 

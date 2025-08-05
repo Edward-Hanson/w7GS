@@ -358,7 +358,7 @@ Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: todo-taskdefinition
+      Family: todo-task
       NetworkMode: awsvpc
       RequiresCompatibilities: 
         - FARGATE

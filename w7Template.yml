@@ -150,7 +150,17 @@ Resources:
         - !Ref PrivateSubnet2
       SecurityGroupIds:
         - !Ref ECSSecurityGroup
+  
 
+  S3VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      VpcEndpointType: Gateway 
+      RouteTableIds:
+        - !Ref PrivateRouteTable1
+        - !Ref PrivateRouteTable2
 
 
 ################################################### ECR Resources ##################################################
@@ -220,6 +230,13 @@ Resources:
           FromPort: 2020
           ToPort: 2020
           SourceSecurityGroupId: !Ref ALBSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: Allow HTTPS outbound for ECR API calls
+        -
 
   ApplicationLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer

@@ -159,8 +159,7 @@ Resources:
       ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
       VpcEndpointType: Gateway 
       RouteTableIds:
-        - !Ref PrivateRouteTable1
-        - !Ref PrivateRouteTable2
+        - !Ref PrivateRouteTable
 
 
 ################################################### ECR Resources ##################################################

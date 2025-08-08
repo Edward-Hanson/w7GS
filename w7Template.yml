@@ -267,189 +267,189 @@ Resources:
       LogGroupName: todo-log-group
       RetentionInDays: 14
 
-  # ECSCluster:
-  #   Type: AWS::ECS::Cluster
-  #   Properties:
-  #     ClusterName: todo-cluster
-  #     CapacityProviders: [FARGATE, FARGATE_SPOT]
-  #     DefaultCapacityProviderStrategy:
-  #       - CapacityProvider: FARGATE
-  #         Weight: 1
-  #       - CapacityProvider: FARGATE_SPOT
-  #         Weight: 4
-  #     ClusterSettings:
-  #       - Name: containerInsights
-  #         Value: enabled
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: todo-cluster
+      CapacityProviders: [FARGATE, FARGATE_SPOT]
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+        - CapacityProvider: FARGATE_SPOT
+          Weight: 4
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
 
 
-  # TaskExecutionRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     RoleName: todo-ecs-execution-role
-  #     AssumeRolePolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Effect: Allow
-  #           Principal:
-  #             Service: ecs-tasks.amazonaws.com
-  #           Action: sts:AssumeRole
-  #     ManagedPolicyArns:
-  #       - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: todo-ecs-execution-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
     
 
-  # TaskRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     RoleName: todo-ecs-task-role
-  #     AssumeRolePolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Effect: Allow
-  #           Principal:
-  #             Service: ecs-tasks.amazonaws.com
-  #           Action: sts:AssumeRole
-  #     Policies:
-  #     - PolicyName: DynamoDBAccess
-  #       PolicyDocument:
-  #         Version: "2012-10-17"
-  #         Statement:
-  #           - Effect: Allow
-  #             Action:
-  #               - dynamodb:PutItem
-  #               - dynamodb:GetItem
-  #               - dynamodb:UpdateItem
-  #               - dynamodb:DeleteItem
-  #               - dynamodb:Scan
-  #               - dynamodb:Query
-  #             Resource: arn:aws:dynamodb:*:*:table/TodoTable
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: todo-ecs-task-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+      - PolicyName: DynamoDBAccess
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+                - dynamodb:Scan
+                - dynamodb:Query
+              Resource: arn:aws:dynamodb:*:*:table/TodoTable
 
 
-  # TaskDefinition:
-  #   Type: AWS::ECS::TaskDefinition
-  #   Properties:
-  #     Family: todo-task
-  #     NetworkMode: awsvpc
-  #     RequiresCompatibilities: 
-  #       - FARGATE
-  #     Cpu: 512
-  #     Memory: 1024
-  #     ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
-  #     TaskRoleArn: !GetAtt TaskRole.Arn
-  #     ContainerDefinitions:
-  #       - Name: todo-container
-  #         Image: 343218213563.dkr.ecr.eu-west-1.amazonaws.com/todo-repo:latest
-  #         PortMappings:
-  #           - ContainerPort: 2020
-  #         LogConfiguration:
-  #           LogDriver: awslogs
-  #           Options:
-  #             awslogs-group: !Ref LogGroup
-  #             awslogs-region: !Ref AWS::Region
-  #             awslogs-stream-prefix: ecs
-  #         HealthCheck:
-  #           Command: 
-  #             - CMD-SHELL
-  #             - "curl -f http://localhost:2020/actuator/health || exit 1"
-  #           Interval: 30
-  #           Timeout: 10
-  #           Retries: 3
-  #           StartPeriod: 60
-  #     Tags:
-  #       - Key: Name
-  #         Value: todo-task
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: todo-task
+      NetworkMode: awsvpc
+      RequiresCompatibilities: 
+        - FARGATE
+      Cpu: 512
+      Memory: 1024
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ContainerDefinitions:
+        - Name: todo-container
+          Image: 343218213563.dkr.ecr.eu-west-1.amazonaws.com/todo-repo:latest
+          PortMappings:
+            - ContainerPort: 2020
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+          HealthCheck:
+            Command: 
+              - CMD-SHELL
+              - "curl -f http://localhost:2020/actuator/health || exit 1"
+            Interval: 30
+            Timeout: 10
+            Retries: 3
+            StartPeriod: 60
+      Tags:
+        - Key: Name
+          Value: todo-task
 
 
-  # ECSService:
-  #   Type: AWS::ECS::Service
-  #   DependsOn: 
-  #     - ALBListener
-  #     - ALBTestListener
-  #   Properties:
-  #     ServiceName: todo-service
-  #     LaunchType: FARGATE
-  #     Cluster: !Ref ECSCluster
-  #     DesiredCount: 2
-  #     TaskDefinition: !Ref TaskDefinition
-  #     DeploymentController:
-  #       Type: CODE_DEPLOY
-  #     NetworkConfiguration:
-  #       AwsvpcConfiguration:
-  #         AssignPublicIp: DISABLED
-  #         Subnets:
-  #           - !Ref PrivateSubnet1
-  #           - !Ref PrivateSubnet2
-  #         SecurityGroups:
-  #           - !Ref ECSSecurityGroup
-  #     LoadBalancers:  
-  #       - ContainerName: todo-container
-  #         ContainerPort: 2020
-  #         TargetGroupArn: !Ref BlueTargetGroup  
+  ECSService:
+    Type: AWS::ECS::Service
+    DependsOn: 
+      - ALBListener
+      - ALBTestListener
+    Properties:
+      ServiceName: todo-service
+      LaunchType: FARGATE
+      Cluster: !Ref ECSCluster
+      DesiredCount: 2
+      TaskDefinition: !Ref TaskDefinition
+      DeploymentController:
+        Type: CODE_DEPLOY
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+      LoadBalancers:  
+        - ContainerName: todo-container
+          ContainerPort: 2020
+          TargetGroupArn: !Ref BlueTargetGroup  
 
-  # LogsEndpoint:
-  #   Type: AWS::EC2::VPCEndpoint
-  #   Properties:
-  #     ServiceName: !Sub "com.amazonaws.${AWS::Region}.logs"
-  #     VpcId: !Ref VPC
-  #     VpcEndpointType: Interface
-  #     SubnetIds: [!Ref PrivateSubnet1, !Ref PrivateSubnet2]
-  #     SecurityGroupIds:
-  #       - !Ref ECSSecurityGroup
+  LogsEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.logs"
+      VpcId: !Ref VPC
+      VpcEndpointType: Interface
+      SubnetIds: [!Ref PrivateSubnet1, !Ref PrivateSubnet2]
+      SecurityGroupIds:
+        - !Ref ECSSecurityGroup
 
-  # ECRDkrVPCEndpoint:
-  #   Type: AWS::EC2::VPCEndpoint
-  #   Properties:
-  #     ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
-  #     VpcId: !Ref VPC
-  #     SubnetIds:
-  #       - !Ref PrivateSubnet1
-  #       - !Ref PrivateSubnet2
-  #     SecurityGroupIds:
-  #       - !Ref VPCEndpointSecurityGroup
-  #     VpcEndpointType: Interface
-  #     PrivateDnsEnabled: true
+  ECRDkrVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
+      VpcId: !Ref VPC
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      SecurityGroupIds:
+        - !Ref VPCEndpointSecurityGroup
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
 
-  # ECRApiVPCEndpoint:
-  #   Type: AWS::EC2::VPCEndpoint
-  #   Properties:
-  #     ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.api
-  #     VpcId: !Ref VPC
-  #     SubnetIds:
-  #       - !Ref PrivateSubnet1
-  #       - !Ref PrivateSubnet2
-  #     SecurityGroupIds:
-  #       - !Ref VPCEndpointSecurityGroup
-  #     VpcEndpointType: Interface
-  #     PrivateDnsEnabled: true
+  ECRApiVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.api
+      VpcId: !Ref VPC
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      SecurityGroupIds:
+        - !Ref VPCEndpointSecurityGroup
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
   
 
-  # S3VPCEndpoint:
-  #   Type: AWS::EC2::VPCEndpoint
-  #   Properties:
-  #     VpcId: !Ref VPC
-  #     ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
-  #     VpcEndpointType: Gateway 
-  #     RouteTableIds:
-  #       - !Ref PrivateRouteTable
+  S3VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      VpcEndpointType: Gateway 
+      RouteTableIds:
+        - !Ref PrivateRouteTable
 
   
-  # VPCEndpointSecurityGroup:
-  #   Type: AWS::EC2::SecurityGroup
-  #   Properties:
-  #     GroupName: todo-vpc-endpoint-sg
-  #     GroupDescription: Security group for VPC endpoints
-  #     VpcId: !Ref VPC
-  #     SecurityGroupIngress:
-  #       - IpProtocol: tcp
-  #         FromPort: 443
-  #         ToPort: 443
-  #         SourceSecurityGroupId: !Ref ECSSecurityGroup
-  #         Description: Allow HTTPS from ECS tasks
-  #     SecurityGroupEgress:
-  #       - IpProtocol: -1
-  #         CidrIp: 0.0.0.0/0
-  #     Tags:
-  #       - Key: Name
-  #         Value: todo-vpc-endpoint-sg
+  VPCEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: todo-vpc-endpoint-sg
+      GroupDescription: Security group for VPC endpoints
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref ECSSecurityGroup
+          Description: Allow HTTPS from ECS tasks
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: todo-vpc-endpoint-sg
 
 
 

@@ -11,8 +11,8 @@ Resources:
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:
-          - "subnet-09ba763780092a402"
-          - "subnet-0d521fd5426aea48f"
+          - "subnet-006a665c816deb060"
+          - "subnet-011fbe95a8e5c6e50"
           SecurityGroups:
-          - "sg-0a73f7777986673eb"
+          - "sg-008cfae6c1e5d6b41"
           AssignPublicIp: "DISABLED"

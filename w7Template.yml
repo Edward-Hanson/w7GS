@@ -385,71 +385,71 @@ Resources:
   #         ContainerPort: 2020
   #         TargetGroupArn: !Ref BlueTargetGroup  
 
-  # LogsEndpoint:
-  #   Type: AWS::EC2::VPCEndpoint
-  #   Properties:
-  #     ServiceName: !Sub "com.amazonaws.${AWS::Region}.logs"
-  #     VpcId: !Ref VPC
-  #     VpcEndpointType: Interface
-  #     SubnetIds: [!Ref PrivateSubnet1, !Ref PrivateSubnet2]
-  #     SecurityGroupIds:
-  #       - !Ref ECSSecurityGroup
+  LogsEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.logs"
+      VpcId: !Ref VPC
+      VpcEndpointType: Interface
+      SubnetIds: [!Ref PrivateSubnet1, !Ref PrivateSubnet2]
+      SecurityGroupIds:
+        - !Ref ECSSecurityGroup
 
-  # ECRDkrVPCEndpoint:
-  #   Type: AWS::EC2::VPCEndpoint
-  #   Properties:
-  #     ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
-  #     VpcId: !Ref VPC
-  #     SubnetIds:
-  #       - !Ref PrivateSubnet1
-  #       - !Ref PrivateSubnet2
-  #     SecurityGroupIds:
-  #       - !Ref VPCEndpointSecurityGroup
-  #     VpcEndpointType: Interface
-  #     PrivateDnsEnabled: true
+  ECRDkrVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
+      VpcId: !Ref VPC
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      SecurityGroupIds:
+        - !Ref VPCEndpointSecurityGroup
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
 
-  # ECRApiVPCEndpoint:
-  #   Type: AWS::EC2::VPCEndpoint
-  #   Properties:
-  #     ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.api
-  #     VpcId: !Ref VPC
-  #     SubnetIds:
-  #       - !Ref PrivateSubnet1
-  #       - !Ref PrivateSubnet2
-  #     SecurityGroupIds:
-  #       - !Ref VPCEndpointSecurityGroup
-  #     VpcEndpointType: Interface
-  #     PrivateDnsEnabled: true
+  ECRApiVPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.api
+      VpcId: !Ref VPC
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      SecurityGroupIds:
+        - !Ref VPCEndpointSecurityGroup
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
   
 
-  # S3VPCEndpoint:
-  #   Type: AWS::EC2::VPCEndpoint
-  #   Properties:
-  #     VpcId: !Ref VPC
-  #     ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
-  #     VpcEndpointType: Gateway 
-  #     RouteTableIds:
-  #       - !Ref PrivateRouteTable
+  S3VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      VpcEndpointType: Gateway 
+      RouteTableIds:
+        - !Ref PrivateRouteTable
 
   
-  # VPCEndpointSecurityGroup:
-  #   Type: AWS::EC2::SecurityGroup
-  #   Properties:
-  #     GroupName: todo-vpc-endpoint-sg
-  #     GroupDescription: Security group for VPC endpoints
-  #     VpcId: !Ref VPC
-  #     SecurityGroupIngress:
-  #       - IpProtocol: tcp
-  #         FromPort: 443
-  #         ToPort: 443
-  #         SourceSecurityGroupId: !Ref ECSSecurityGroup
-  #         Description: Allow HTTPS from ECS tasks
-  #     SecurityGroupEgress:
-  #       - IpProtocol: -1
-  #         CidrIp: 0.0.0.0/0
-  #     Tags:
-  #       - Key: Name
-  #         Value: todo-vpc-endpoint-sg
+  VPCEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: todo-vpc-endpoint-sg
+      GroupDescription: Security group for VPC endpoints
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref ECSSecurityGroup
+          Description: Allow HTTPS from ECS tasks
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: todo-vpc-endpoint-sg
 
 
 

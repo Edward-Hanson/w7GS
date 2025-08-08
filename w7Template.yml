@@ -118,46 +118,46 @@ Resources:
 
 ################################################### ECR Resources ##################################################
 
-#   ECRRepository:
-#     Type: AWS::ECR::Repository
-#     Properties:
-#       RepositoryName: todo-repo
-#       ImageTagMutability: MUTABLE
-#       ImageScanningConfiguration:
-#         ScanOnPush: true
-#       LifecyclePolicy:
-#         LifecyclePolicyText: |
-#           {
-#             "rules": [
-#               {
-#                 "rulePriority": 1,
-#                 "selection": {
-#                   "tagStatus": "untagged",
-#                   "countType": "sinceImagePushed",
-#                   "countUnit": "days",
-#                   "countNumber": 1
-#                 },
-#                 "action": {
-#                   "type": "expire"
-#                 }
-#               },
-#               {
-#                 "rulePriority": 2,
-#                 "selection": {
-#                   "tagStatus": "tagged",
-#                   "tagPrefixList": ["latest"],
-#                   "countType": "imageCountMoreThan",
-#                   "countNumber": 10
-#                 },
-#                 "action": {
-#                   "type": "expire"
-#                 }
-#               }
-#             ]
-#           }
-#       Tags:
-#         - Key: Name
-#           Value: todo-repo
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: todo-repo
+      ImageTagMutability: MUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 1
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["latest"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 10
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+      Tags:
+        - Key: Name
+          Value: todo-repo
 
 
 # ################################################### Security Groups and Load Balancers ##################################################

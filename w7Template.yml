@@ -434,28 +434,28 @@ Resources:
 
   
   VPCEndpointSecurityGroup:
-  Type: AWS::EC2::SecurityGroup
-  Properties:
-    GroupName: todo-vpc-endpoint-sg
-    GroupDescription: Security group for VPC endpoints
-    VpcId: !Ref VPC
-    SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 443
-        ToPort: 443
-        SourceSecurityGroupId: !Ref ECSSecurityGroup
-        Description: Allow HTTPS from ECS tasks to ECR
-      - IpProtocol: tcp        
-        FromPort: 443
-        ToPort: 443
-        SourceSecurityGroupId: !Ref ECSSecurityGroup
-        Description: Allow HTTPS from ECS tasks to CloudWatch Logs
-    SecurityGroupEgress:
-      - IpProtocol: -1
-        CidrIp: 0.0.0.0/0
-    Tags:
-      - Key: Name
-        Value: todo-vpc-endpoint-sg
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: todo-vpc-endpoint-sg
+      GroupDescription: Security group for VPC endpoints
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref ECSSecurityGroup
+          Description: Allow HTTPS from ECS tasks to ECR
+        - IpProtocol: tcp        
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref ECSSecurityGroup
+          Description: Allow HTTPS from ECS tasks to CloudWatch Logs
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: todo-vpc-endpoint-sg
 
 
 

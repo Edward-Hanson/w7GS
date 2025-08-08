@@ -526,14 +526,14 @@ Resources:
           ActionOnTimeout: CONTINUE_DEPLOYMENT
 
 
-# ############################################## Code Pipeline #################################################
+############################################### Code Pipeline #################################################
  
-#   CodePipelineArtifactBucket:
-#     Type: AWS::S3::Bucket
-#     Properties:
-#       BucketName: week-seven-todo-artifact-bucket
-#       VersioningConfiguration:
-#         Status: Enabled
+  CodePipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: week-seven-todo-artifact-bucket
+      VersioningConfiguration:
+        Status: Enabled
 
 
 #   CodePipelineRole:

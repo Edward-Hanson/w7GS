@@ -459,71 +459,71 @@ Resources:
 
 
 
-# ########################################## Code Deploy #################################################
+########################################## Code Deploy #################################################
 
-#   CodeDeployApplication:
-#     Type: AWS::CodeDeploy::Application
-#     Properties:
-#       ApplicationName: todo-app
-#       ComputePlatform: ECS
+  CodeDeployApplication:
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ApplicationName: todo-app
+      ComputePlatform: ECS
 
 
-#   CodeDeployRole:
-#     Type: AWS::IAM::Role
-#     Properties:
-#       RoleName: todo-codedeploy-role
-#       AssumeRolePolicyDocument:
-#         Version: '2012-10-17'
-#         Statement:
-#           - Effect: Allow
-#             Principal:
-#               Service: codedeploy.amazonaws.com
-#             Action: sts:AssumeRole
-#       Policies:
-#         - PolicyName: CodeDeployECSInlinePolicy
-#           PolicyDocument:
-#             Version: '2012-10-17'
-#             Statement:
-#               - Effect: Allow
-#                 Action:
-#                   - ecs:*
-#                   - elasticloadbalancing:*
-#                   - codedeploy:*
-#                   - iam:PassRole
-#                   - cloudwatch:*
-#                 Resource: "*"
+  CodeDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: todo-codedeploy-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codedeploy.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeDeployECSInlinePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:*
+                  - elasticloadbalancing:*
+                  - codedeploy:*
+                  - iam:PassRole
+                  - cloudwatch:*
+                Resource: "*"
 
-#   ECSBlueGreenDeployment:
-#     Type: AWS::CodeDeploy::DeploymentGroup
-#     DependsOn: CodeDeployApplication
-#     Properties:
-#       ApplicationName: !Ref CodeDeployApplication
-#       DeploymentGroupName: todo-deployment-group
-#       ServiceRoleArn: !GetAtt CodeDeployRole.Arn
-#       DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
-#       DeploymentStyle:
-#         DeploymentType: BLUE_GREEN
-#         DeploymentOption: WITH_TRAFFIC_CONTROL
-#       ECSServices:
-#         - ClusterName: todo-cluster
-#           ServiceName: todo-service
-#       LoadBalancerInfo:
-#         TargetGroupPairInfoList:
-#           - TargetGroups:
-#               - Name: todo-blue-tg
-#               - Name: todo-green-tg
-#             ProdTrafficRoute:
-#               ListenerArns:
-#                 - !Ref ALBListener
-#             TestTrafficRoute:
-#               ListenerArns:
-#                 - !Ref ALBTestListener
-#       BlueGreenDeploymentConfiguration:
-#         TerminateBlueInstancesOnDeploymentSuccess:
-#           Action: TERMINATE
-#           TerminationWaitTimeInMinutes: 1
-#         DeploymentReadyOption:
-#           ActionOnTimeout: CONTINUE_DEPLOYMENT
+  ECSBlueGreenDeployment:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    DependsOn: CodeDeployApplication
+    Properties:
+      ApplicationName: !Ref CodeDeployApplication
+      DeploymentGroupName: todo-deployment-group
+      ServiceRoleArn: !GetAtt CodeDeployRole.Arn
+      DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
+      DeploymentStyle:
+        DeploymentType: BLUE_GREEN
+        DeploymentOption: WITH_TRAFFIC_CONTROL
+      ECSServices:
+        - ClusterName: todo-cluster
+          ServiceName: todo-service
+      LoadBalancerInfo:
+        TargetGroupPairInfoList:
+          - TargetGroups:
+              - Name: todo-blue-tg
+              - Name: todo-green-tg
+            ProdTrafficRoute:
+              ListenerArns:
+                - !Ref ALBListener
+            TestTrafficRoute:
+              ListenerArns:
+                - !Ref ALBTestListener
+      BlueGreenDeploymentConfiguration:
+        TerminateBlueInstancesOnDeploymentSuccess:
+          Action: TERMINATE
+          TerminationWaitTimeInMinutes: 1
+        DeploymentReadyOption:
+          ActionOnTimeout: CONTINUE_DEPLOYMENT
 
 
 # ############################################## Code Pipeline #################################################
@@ -672,26 +672,26 @@ Resources:
 #           RoleArn: !GetAtt CodePipelineRole.Arn
 
 
-# Outputs:
-#   VPCId:
-#     Value: !Ref VPC
+Outputs:
+  VPCId:
+    Value: !Ref VPC
 
-#   PrivateSubnet1Id:
-#     Description: Private Subnet 1 ID
-#     Value: !Ref PrivateSubnet1
+  PrivateSubnet1Id:
+    Description: Private Subnet 1 ID
+    Value: !Ref PrivateSubnet1
 
-#   PrivateSubnet2Id:
-#     Description: Private Subnet 2 ID
-#     Value: !Ref PrivateSubnet2
+  PrivateSubnet2Id:
+    Description: Private Subnet 2 ID
+    Value: !Ref PrivateSubnet2
 
-#   ECRRepositoryURI:
-#     Description: ECR Repository URI
-#     Value: !GetAtt ECRRepository.RepositoryUri
+  ECRRepositoryURI:
+    Description: ECR Repository URI
+    Value: !GetAtt ECRRepository.RepositoryUri
   
-#   ECRRepositoryArn:
-#     Description: ECR Repository ARN
-#     Value: !GetAtt ECRRepository.Arn
+  ECRRepositoryArn:
+    Description: ECR Repository ARN
+    Value: !GetAtt ECRRepository.Arn
 
-#   ECSSecurityGroupId:
-#     Description: ECS Security Group ID
-#     Value: !Ref ECSSecurityGroup
+  ECSSecurityGroupId:
+    Description: ECS Security Group ID
+    Value: !Ref ECSSecurityGroup
